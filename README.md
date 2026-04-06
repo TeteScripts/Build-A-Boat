@@ -34,6 +34,13 @@ local function runAutoFarm()
             local tween = TweenService:Create(root, info, {CFrame = targetCFrame})
             tween:Play()
             tween.Completed:Wait()
+
+            root.Anchored = false
+            for _, part in pairs(char:GetChildren()) do
+                if part:IsA("BasePart") then part.CanCollide = true end
+            end
+
+            task.wait(0.3)
             ff:Destroy()
         end
 
@@ -42,6 +49,7 @@ local function runAutoFarm()
             local stage = workspace.BoatStages.NormalStages:FindFirstChild("CaveStage" .. i)
             if stage then
                 teleportTo(stage.DarknessPart.CFrame * CFrame.new(0, 60, 0))
+                task.wait(0.5)
             end
         end
 
@@ -49,25 +57,11 @@ local function runAutoFarm()
             local chestTrigger = workspace.BoatStages.NormalStages.TheEnd.GoldenChest.Trigger
             if chestTrigger then
                 teleportTo(chestTrigger.CFrame * CFrame.new(0, 3, 0))
-                task.wait(0.5)
-                root.Anchored = false
-                for _, part in pairs(char:GetChildren()) do
-                    if part:IsA("BasePart") then part.CanCollide = true end
-                end
+                task.wait(1)
             end
         end
-        task.wait(1)
-    end
 
-    local char = player.Character
-    if char then
-        local r = char:FindFirstChild("HumanoidRootPart")
-        if r then
-            r.Anchored = false
-            for _, part in pairs(char:GetChildren()) do
-                if part:IsA("BasePart") then part.CanCollide = true end
-            end
-        end
+        task.wait(1)
     end
 end
 
@@ -77,7 +71,7 @@ screenGui.Name = "Tezxz0Hub"
 screenGui.ResetOnSpawn = false
 screenGui.Parent = playerGui
 
--- ========== ปุ่มลอย ==========
+-- ปุ่มลอย
 local toggleBtn = Instance.new("TextButton")
 toggleBtn.Size = UDim2.new(0, 38, 0, 38)
 toggleBtn.Position = UDim2.new(0, 10, 0.5, -19)
@@ -91,7 +85,7 @@ toggleBtn.ZIndex = 10
 toggleBtn.Parent = screenGui
 Instance.new("UICorner", toggleBtn).CornerRadius = UDim.new(1, 0)
 
--- ========== Main Frame ==========
+-- Main Frame
 local main = Instance.new("Frame")
 main.Size = UDim2.new(0, 340, 0, 95)
 main.Position = UDim2.new(0.5, -170, 0.5, -47)
@@ -107,7 +101,7 @@ stroke.Color = Color3.fromRGB(160, 60, 200)
 stroke.Thickness = 1.5
 stroke.Parent = main
 
--- ========== Title Bar ==========
+-- Title Bar
 local titleBar = Instance.new("Frame")
 titleBar.Size = UDim2.new(1, 0, 0, 32)
 titleBar.BackgroundColor3 = Color3.fromRGB(22, 20, 30)
@@ -157,7 +151,6 @@ line.BorderSizePixel = 0
 line.ZIndex = 5
 line.Parent = titleBar
 
--- ปุ่ม —
 local minBtn = Instance.new("TextButton")
 minBtn.Size = UDim2.new(0, 26, 0, 26)
 minBtn.Position = UDim2.new(1, -58, 0.5, -13)
@@ -169,7 +162,6 @@ minBtn.TextSize = 13
 minBtn.ZIndex = 6
 minBtn.Parent = titleBar
 
--- ปุ่ม X
 local closeBtn = Instance.new("TextButton")
 closeBtn.Size = UDim2.new(0, 26, 0, 26)
 closeBtn.Position = UDim2.new(1, -28, 0.5, -13)
@@ -181,7 +173,7 @@ closeBtn.TextSize = 13
 closeBtn.ZIndex = 6
 closeBtn.Parent = titleBar
 
--- ========== Checkbox ==========
+-- Checkbox
 local function createCheckbox(labelText, posY, onEnable, onDisable)
     local row = Instance.new("Frame")
     row.Size = UDim2.new(1, -16, 0, 40)
@@ -257,24 +249,21 @@ createCheckbox("Auto Farm Gold & Gold Block", 34,
     end
 )
 
--- ========== เปิด/ปิด ==========
+-- เปิด/ปิด
 local isOpen = false
 local isMinimized = false
 
 toggleBtn.MouseButton1Click:Connect(function()
     isOpen = not isOpen
     main.Visible = isOpen
-    -- ซ่อนปุ่มลอยเมื่อเปิด UI
     toggleBtn.Visible = not isOpen
 end)
 
 minBtn.MouseButton1Click:Connect(function()
     isMinimized = not isMinimized
-    if isMinimized then
-        main.Size = UDim2.new(0, 340, 0, 32)
-    else
-        main.Size = UDim2.new(0, 340, 0, 95)
-    end
+    main.Size = isMinimized
+        and UDim2.new(0, 340, 0, 32)
+        or UDim2.new(0, 340, 0, 95)
 end)
 
 closeBtn.MouseButton1Click:Connect(function()
@@ -286,7 +275,7 @@ closeBtn.MouseButton1Click:Connect(function()
     main.Size = UDim2.new(0, 340, 0, 95)
 end)
 
--- ========== Drag ==========
+-- Drag
 local dragging, dragStart, startPos
 titleBar.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1
